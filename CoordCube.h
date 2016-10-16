@@ -12,21 +12,24 @@ class CoordCube {
 public:
     CoordCube(){};
     CoordCube(CubieCube *c);
+    CoordCube(CoordCube *c);
+    bool isClean();
     void fromCubieCube(CubieCube *c);
     void toCubiecube(CubieCube *c);
 
-    static const uint16_t N_TWIST = 2187;// 3^7 possible corner orientations
-    static const uint16_t N_FLIP = 2048;// 2^11 possible edge flips
-    static const uint16_t N_SLICE1 = 495;// 12 choose 4 possible positions of FR,FL,BL,BR edges
-    static const uint16_t N_SLICE2 = 24;// 4! permutations of FR,FL,BL,BR edges in phase2
-    static const uint16_t N_PARITY = 2; // 2 possible corner parities
-    static const uint16_t N_FRtoBR = 11880; // 12!/(12-4)! permutation of FR,FL,BL,BR edges
+    static const uint16_t N_TWIST = 2187;// 3^7 角块的方向, 3^7种可能
+    static const uint16_t N_FLIP = 2048;// 2^11 中间块的方向, 2^11种可能
+    static const uint16_t N_SLICE1 = 495;// FR,FL,BL,BR 四个中间块可能的位置，忽略顺序
+    static const uint16_t N_SLICE2 = 24;// FR,FL,BL,BR 四个中间块可能的排列，忽略位置
+    static const uint16_t N_PARITY = 2; // 奇偶性
+    static const uint16_t N_FRtoBR = 11880; // FR,FL,BL,BR 所有的可能 = N_SLICE1*N_SLICE2
 
     // phase2
-    static const int N_URFtoDRB = 40320;// 8! permutations of the corners
-    static const int N_URtoDB = 19958400; // 12!/(12-8)! permutations of UR, UF, UL, UB, DR, DF, DL, DB edges
+    static const int N_URFtoDRB = 40320;// 所有角块可能的排列 8!
+    static const int N_URtoDBPERMUTATIONS = 40320;// 前八个中间块可能的排列 8!
+    static const int N_URtoDB = 19958400; // 12!/(12-8)! 前八个中间块的排列，包括位置和顺序
 
-    static const uint16_t N_MOVE = 18;
+    static const uint16_t N_MOVE = 18; // 18种转动方式
 
     // phase1 & phase2
     static uint16_t twistMove[N_TWIST][N_MOVE];
@@ -38,6 +41,15 @@ public:
     static uint16_t URFtoDRBMove[N_URFtoDRB][N_MOVE]; // corners
     static uint32_t URtoDBMove[N_URtoDB][N_MOVE]; // first 8 edges
 
+    // 反查表
+    static const int N_UDSLICEFLIP = N_SLICE1*N_FLIP;
+    static uint8_t lb_UDSliceFlip[N_UDSLICEFLIP];
+    static const int N_UDSLICETWIST = N_SLICE1 * N_TWIST;
+    static uint8_t lb_UDSliceTwist[N_UDSLICETWIST];
+
+    static uint8_t lb_UDSliceCorner[N_SLICE2*N_URFtoDRB*N_PARITY];
+    static uint8_t lb_UDSliceEdge[N_SLICE2*N_URtoDBPERMUTATIONS*N_PARITY];
+
     static void init();
     static void initMoveTable();
 
@@ -48,6 +60,7 @@ public:
 
     void move(uint8_t m);
 
+    // 以下六个向量可以表示任何一种魔方
     // phase1
     uint16_t twist;
     uint16_t flip;
