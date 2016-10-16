@@ -26,8 +26,8 @@ public:
 
     // phase2
     static const int N_URFtoDRB = 40320;// 所有角块可能的排列 8!
-    static const int N_URtoDBPERMUTATIONS = 40320;// 前八个中间块可能的排列 8!
-    static const int N_URtoDB = 19958400; // 12!/(12-8)! 前八个中间块的排列，包括位置和顺序
+    static const int N_URtoDBPERMUTATIONS = 40320;// 前八个中间块可能的排列, 忽略位置 8!
+    static const int N_URtoDB = 19958400; // 12!/(12-8)! 前八个中间块的排列，包括位置和顺序 N_SLICE1*N_URtoDBPERMUTATIONS
 
     static const uint16_t N_MOVE = 18; // 18种转动方式
 
@@ -58,6 +58,7 @@ public:
     static bool loadMoveTable();
     static void writeMoveTable();
 
+    // 快速的转动吧
     void move(uint8_t m);
 
     // 以下六个向量可以表示任何一种魔方
